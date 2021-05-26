@@ -36,8 +36,9 @@ public class NettyRoutingFilterInterceptor implements InstanceMethodsAroundInter
                              MethodInterceptResult result) throws Throwable {
         ServerWebExchange exchange = (ServerWebExchange) allArguments[0];
         EnhancedInstance enhancedInstance = getInstance(exchange);
+        String simpleName = objInst.getClass().getSimpleName();
+        AbstractSpan span = ContextManager.createLocalSpan("SpringCloudGateway/" + simpleName);
 
-        AbstractSpan span = ContextManager.createLocalSpan("SpringCloudGateway/RoutingFilter");
         if (enhancedInstance != null && enhancedInstance.getSkyWalkingDynamicField() != null) {
             ContextManager.continued((ContextSnapshot) enhancedInstance.getSkyWalkingDynamicField());
         }
@@ -58,6 +59,10 @@ public class NettyRoutingFilterInterceptor implements InstanceMethodsAroundInter
     @Override
     public Object afterMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
                               Object ret) throws Throwable {
+        String simpleName = objInst.getClass().getSimpleName();
+        if (!"NettyRoutingFilter".equals(simpleName)) {
+            ContextManager.stopSpan();
+        }
         return ret;
     }
 

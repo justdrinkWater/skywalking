@@ -22,6 +22,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.ConstructorInterceptPoint;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.InstanceMethodsInterceptPoint;
 import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
+import org.apache.skywalking.apm.agent.core.plugin.match.HierarchyMatch;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static org.apache.skywalking.apm.agent.core.plugin.bytebuddy.ArgumentTypeNameMatch.takesArgumentWithType;
@@ -31,7 +32,7 @@ public class NettyRoutingFilterInstrumentation extends AbstractGateway210Enhance
 
     @Override
     protected ClassMatch enhanceClass() {
-        return byName(Constants.INTERCEPT_CLASS_NETTY_ROUTING_FILTER);
+        return HierarchyMatch.byHierarchyMatch(Constants.INTERCEPT_CLASS_NETTY_ROUTING_FILTER);
     }
 
     @Override

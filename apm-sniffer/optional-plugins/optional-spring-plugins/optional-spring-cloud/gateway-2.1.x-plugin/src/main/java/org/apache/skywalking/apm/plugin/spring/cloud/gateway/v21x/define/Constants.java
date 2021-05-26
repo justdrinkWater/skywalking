@@ -26,7 +26,7 @@ public interface Constants {
     String HTTP_CLIENT_FINALIZER_RESPONSE_CONNECTION_INTERCEPTOR = "org.apache.skywalking.apm.plugin.spring.cloud.gateway.v21x.HttpClientFinalizerResponseConnectionInterceptor";
 
     // NettyRoutingFilter
-    String INTERCEPT_CLASS_NETTY_ROUTING_FILTER = "org.springframework.cloud.gateway.filter.NettyRoutingFilter";
+    String INTERCEPT_CLASS_NETTY_ROUTING_FILTER = "org.springframework.cloud.gateway.filter.GlobalFilter";
     String NETTY_ROUTING_FILTER_INTERCEPTOR = "org.apache.skywalking.apm.plugin.spring.cloud.gateway.v21x.NettyRoutingFilterInterceptor";
 
     // TcpClient
