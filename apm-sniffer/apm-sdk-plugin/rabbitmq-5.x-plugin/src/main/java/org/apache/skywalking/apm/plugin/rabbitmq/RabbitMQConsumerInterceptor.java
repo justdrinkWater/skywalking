@@ -48,9 +48,9 @@ public class RabbitMQConsumerInterceptor implements InstanceMethodsAroundInterce
         Message message = (Message) allArguments[1];
         MessageProperties properties = message.getMessageProperties();
         String msgTopic = properties.getReceivedRoutingKey();
-        String msgContent = new String(message.getBody());
-        AbstractSpan activeSpan = ContextManager.createEntrySpan(OPERATE_NAME_PREFIX + "Topic/" + msgTopic +
-                CONSUMER_OPERATE_NAME_SUFFIX + msgContent, null).start(System.currentTimeMillis());
+        String queue = properties.getConsumerQueue();
+        AbstractSpan activeSpan = ContextManager.createEntrySpan(OPERATE_NAME_PREFIX + "Topic/" + msgTopic + CONSUMER_OPERATE_NAME_SUFFIX + "Queue/" + queue +
+                CONSUMER_OPERATE_NAME_SUFFIX, null).start(System.currentTimeMillis());
 
         Tags.MQ_BROKER.set(activeSpan, url);
         Tags.MQ_TOPIC.set(activeSpan, properties.getReceivedExchange());
