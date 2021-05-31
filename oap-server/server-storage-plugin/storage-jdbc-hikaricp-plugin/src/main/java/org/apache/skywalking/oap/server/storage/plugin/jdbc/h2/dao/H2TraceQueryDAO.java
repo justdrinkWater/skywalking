@@ -167,7 +167,7 @@ public class H2TraceQueryDAO implements ITraceQueryDAO {
         try (Connection connection = h2Client.getConnection()) {
 
             try (ResultSet resultSet = h2Client.executeQuery(
-                connection, "select * from " + SegmentRecord.INDEX_NAME + " where " + SegmentRecord.TRACE_ID + " = ?",
+                connection, "select * from " + SegmentRecord.INDEX_NAME + " where " + SegmentRecord.TRACE_ID + " = ? order by " + SegmentRecord.START_TIME +" asc",
                 traceId
             )) {
                 while (resultSet.next()) {

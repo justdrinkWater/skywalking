@@ -22,3 +22,4 @@ OALLexer.tokens
 /test/plugin/workspace
 /test/jacoco/classes
 /test/jacoco/*.exec
+**/venv/

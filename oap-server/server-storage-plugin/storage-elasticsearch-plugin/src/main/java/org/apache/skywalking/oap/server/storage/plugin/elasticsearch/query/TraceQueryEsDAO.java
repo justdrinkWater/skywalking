@@ -148,7 +148,8 @@ public class TraceQueryEsDAO extends EsDAO implements ITraceQueryDAO {
     @Override
     public List<SegmentRecord> queryByTraceId(String traceId) throws IOException {
         SearchSourceBuilder sourceBuilder = SearchSourceBuilder.searchSource();
-        sourceBuilder.query(QueryBuilders.termQuery(SegmentRecord.TRACE_ID, traceId));
+        sourceBuilder.query(QueryBuilders.termQuery(SegmentRecord.TRACE_ID, traceId))
+                .sort(SegmentRecord.START_TIME, SortOrder.ASC);
         sourceBuilder.size(segmentQueryMaxSize);
 
         SearchResponse response = getClient().search(SegmentRecord.INDEX_NAME, sourceBuilder);
