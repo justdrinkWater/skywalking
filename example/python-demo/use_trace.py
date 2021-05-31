@@ -4,10 +4,13 @@
 
 from time import sleep
 
-from skywalking import Component, config, agent
+from skywalking import agent, config, Component
 from skywalking.decorators import trace, runnable
 from skywalking.trace.context import SpanContext, get_context
 from skywalking.trace.ipc.process import SwProcess
+
+config.init(collector='10.15.97.6:11800', service='sunwei_dev')
+agent.start()
 
 
 @trace()  # the operation name is the method name('some_other_method') by default
@@ -37,8 +40,6 @@ def some_method():
 
 from threading import Thread
 
-config.init(collector='10.15.97.6:11800', service='sunwei_dev')
-agent.start()
 t = Thread(target=some_method)
 t.start()
 
@@ -47,8 +48,8 @@ t.start()
 p1 = SwProcess(target=some_method)
 p1.start()
 p1.join()
-
-context: SpanContext = get_context()
-with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as span:
-    span.component = Component.Flask
-    some_method()
+#
+# context: SpanContext = get_context()
+# with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as span:
+#     span.component = Component.Flask
+#     some_method()

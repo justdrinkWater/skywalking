@@ -1,13 +1,19 @@
 # SkyWalking Python Agent
+
 **SkyWalking-Python**: 是Apache SkyWalking的一个python版本，对python项目提供追踪能力
 
 ## 安装
+
 ### 安装python
+
 **注意**：python需要3.5以上的版本 [下载](https://www.python.org/downloads/)
 
 ### 安装skywakling agent
+
 #### From Pypi
+
 python agent会打包上传到Pypi，所以可以使用pip命令来安装
+
 ```shell
 # Install the latest version, using the default gRPC protocol to report data to OAP
 pip install "apache-skywalking"
@@ -24,6 +30,7 @@ pip install apache-skywalking==0.1.0  # For example, install version 0.1.0 no ma
 ```
 
 #### From Source Codes
+
 源码编译安装，可以参考[FAQ](https://github.com/apache/skywalking-python/blob/master/docs/FAQ.md#q-how-to-build-from-sources).
 
 ### 如何使用
@@ -34,6 +41,7 @@ from skywalking import agent, config
 config.init(collector='127.0.0.1:11800', service='your awesome service')
 agent.start()
 ```
+
 **注意**：python agent 需要skywalking服务端的版本在8.0以上，并且这里的初始化参数，请与相关人员进行沟通
 
 #### Create Spans
@@ -69,6 +77,7 @@ from skywalking.decorators import trace, runnable
 from skywalking.trace.context import SpanContext, get_context
 from skywalking.trace.ipc.process import SwProcess
 
+
 @trace()  # the operation name is the method name('some_other_method') by default
 def some_other_method():
     sleep(1)
@@ -89,23 +98,95 @@ async def async_func2():
     return await async_func()
 
 
-@runnable() # cross thread propagation
-def some_method(): 
+@runnable()  # cross thread propagation
+def some_method():
     some_other_method()
 
-from threading import Thread 
+
+from threading import Thread
+
 t = Thread(target=some_method)
 t.start()
 
 # When another process is started, agents will also be started in other processes, 
 # supporting only the process mode of spawn.
-p1 = SwProcess(target=some_method) 
+p1 = SwProcess(target=some_method)
 p1.start()
 p1.join()
-
 
 context: SpanContext = get_context()
 with context.new_entry_span(op=str('https://github.com/apache/skywalking')) as span:
     span.component = Component.Flask
     some_method()
+```
+
+### 源码修改记录
+
+#### 1、修改Segment
+
+```python
+class Segment(object):
+    def __init__(self):
+        self.segment_id = ID()  # type: ID
+        self.spans = []  # type: List[Span]
+        self.timestamp = int(time.time() * 1000)  # type: int
+        self.related_traces = []  # type: List[ID]
+        self.relate(_NewID())
+```
+
+#### 2、修改trace注解
+
+```python
+def trace(
+        op: str = None,
+        layer: Layer = Layer.Unknown,
+        component: Component = Component.Unknown,
+        tags: List[Tag] = None,
+):
+    def decorator(func):
+        if inspect.iscoroutinefunction(func):
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                _op = op or func.__name__
+                context = get_context()
+
+                span = context.new_local_span(op=_op)
+                span.layer = layer
+                span.component = component
+                [span.tag(tag) for tag in tags or []]
+                with span:
+                    return await func(*args, **kwargs)
+
+            return wrapper
+
+        else:
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                _op = op or func.__name__
+                context = get_context()
+
+                span = context.new_local_span(op=_op)
+                span.layer = layer
+                span.component = component
+                [span.tag(tag) for tag in tags or []]
+                with span:
+                    return func(*args, **kwargs)
+
+            return wrapper
+
+    return decorator
+```
+
+### 日志打印
+
+#### 1、打印debug日志
+
+启动参数增加 **SW_AGENT_LOGGING_LEVEL=DEBUG**
+
+#### 2、打印上传信息
+
+```python
+    s = SegmentObject()
+    logger.debug('reporting SegmentObject %s', s)
+    yield s
 ```
