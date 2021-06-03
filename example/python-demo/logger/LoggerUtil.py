@@ -16,9 +16,10 @@ class LoggerUtil(object):
     }  # 日志级别关系映射
 
     def __init__(self, filename='log.log', level='info', when='D', backCount=3,
-                 fmt='%(asctime)s|%(thread)d|%(levelname)8s|%(filename)20s|%(lineno)d|python-collector|%(message)s'):
+                 fmt='%(asctime)s.%(msecs)03d|%(thread)d|%(levelname)8s|%(filename)20s|%(lineno)d|python-collector|%(message)s',
+                 datefmt='%Y-%m-%d %H:%M:%S'):
         self.logger = logging.getLogger(filename)
-        format_str = logging.Formatter(fmt)  # 设置日志格式
+        format_str = logging.Formatter(fmt=fmt, datefmt=datefmt)  # 设置日志格式
         self.logger.setLevel(self.level_relations.get(level))  # 设置日志级别
         sh = logging.StreamHandler()  # 往屏幕上输出
         sh.setFormatter(format_str)  # 设置屏幕上显示的格式

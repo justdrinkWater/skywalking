@@ -5,7 +5,7 @@ from sender.sender import send_message
 
 if __name__ == '__main__':
     # 加载skywalking
-    config.init(collector='10.15.97.6:11800', service='hfcdn_dev')
+    config.init(collector='10.15.97.6:11800', service='python_collector_dev')
     agent.start()
 
     # 抓取数据
