@@ -9,17 +9,13 @@ from logger.LoggerUtil import LoggerUtil
 
 
 @trace(op="do_print")
-def do_print(st):
-    do_print2(st)
-
-
-@trace(op="do_print2")
-def do_print2(st):
-    print(st)
+def do_print(log, record):
+    log.logger.info(record)
 
 
 @trace(op="do_send_message")
-def do_send_message(channel, record):
+def do_send_message(log, channel, record):
+    do_print(log, record)
     channel.basic_publish(exchange='', routing_key='file_cdn_dev', body=str(record))
 
 
@@ -40,8 +36,7 @@ def send_message(message):
 
     for record in message:
         # body = json.dumps(record)
-        log.logger.info(record)
-        do_send_message(channel, record)
+        do_send_message(log, channel, record)
     # 关闭连接
     connection.close()
 
