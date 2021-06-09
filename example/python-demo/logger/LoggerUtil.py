@@ -15,7 +15,7 @@ class LoggerUtil(object):
         'crit': logging.CRITICAL
     }  # 日志级别关系映射
 
-    def __init__(self, filename='log.log', level='info', when='D', backCount=3,
+    def __init__(self, filename='E:\open_source\person\skywalking\example\python-demo\log.log', level='info', when='D', backCount=3,
                  fmt='%(asctime)s.%(msecs)03d|%(thread)d|%(levelname)8s|%(filename)20s|%(lineno)d|python-collector|%(message)s',
                  datefmt='%Y-%m-%d %H:%M:%S'):
         self.logger = logging.getLogger(filename)

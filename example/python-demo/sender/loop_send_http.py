@@ -13,7 +13,7 @@ def send_http(url):
     print(request.content)  # 返回字节形式
 
 
-i = 300
+i = 1
 while i > 0:
     send_http('http://localhost:8079/demo/rabbitmq')
     i = i - 1

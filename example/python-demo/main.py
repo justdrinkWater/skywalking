@@ -9,7 +9,7 @@ if __name__ == '__main__':
     agent.start()
 
     # 抓取数据
-    ret = get_data(FileCdnRecord.id < 30)
+    ret = get_data(FileCdnRecord.id < 100)
 
     # 发生数据到mq
     send_message(ret)

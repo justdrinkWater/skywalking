@@ -4,19 +4,20 @@
 import pika
 from skywalking import config, agent
 from skywalking.decorators import trace
+from skywalking.trace.tags import Tag
 
 from logger.LoggerUtil import LoggerUtil
 
 
-@trace(op="do_print")
+@trace(op="do_print", tags=[Tag(key='client', val='python')])
 def do_print(log, record):
     log.logger.info(record)
 
 
-@trace(op="do_send_message")
+@trace(op="do_send_message", tags=[Tag(key='client', val='python')])
 def do_send_message(log, channel, record):
     do_print(log, record)
-    channel.basic_publish(exchange='', routing_key='file_cdn_dev', body=str(record))
+    channel.basic_publish(exchange='', routing_key='cdn_skywalking_dev', body=str(record))
 
 
 def send_message(message):
@@ -30,7 +31,7 @@ def send_message(message):
     # 创建通道
     channel = connection.channel()
     # 声明一个队列，生产者和消费者都要声明一个相同的队列，用来防止万一某一方挂了，另一方能正常运行
-    channel.queue_declare(queue='file_cdn_dev', arguments={"x-max-priority": 32}, durable=True)
+    channel.queue_declare(queue='cdn_skywalking_dev', arguments={"x-max-priority": 32}, durable=True)
 
     log = LoggerUtil()
 
