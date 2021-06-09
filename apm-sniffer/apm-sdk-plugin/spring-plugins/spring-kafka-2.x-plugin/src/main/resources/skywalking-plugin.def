@@ -14,10 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kafka-0.11.x/1.x/2.x=org.apache.skywalking.apm.plugin.kafka.define.CallbackInstrumentation
-kafka-0.11.x/1.x/2.x=org.apache.skywalking.apm.plugin.kafka.define.KafkaConsumerInstrumentation
-kafka-0.11.x/1.x/2.x=org.apache.skywalking.apm.plugin.kafka.define.KafkaProducerInstrumentation
-kafka-0.11.x/1.x/2.x=org.apache.skywalking.apm.plugin.kafka.define.KafkaProducerMapInstrumentation
-kafka-0.11.x/1.x/2.x=org.apache.skywalking.apm.plugin.kafka.define.KafkaTemplateInstrumentation
-kafka-0.11.x/1.x/2.x=org.apache.skywalking.apm.plugin.kafka.define.KafkaTemplateCallbackInstrumentation
-kafka-0.11.x/1.x/2.x=org.apache.skywalking.apm.plugin.kafka.define.KafkaMessageListenerInstrumentation
+spring-kafka-2.x=org.apache.skywalking.apm.plugin.spring.kafka.define.KafkaMessageHandlerAnnotationActivation
+spring-kafka-2.x=org.apache.skywalking.apm.plugin.spring.kafka.define.KafkaBatchMessageListenerInstrumentation
