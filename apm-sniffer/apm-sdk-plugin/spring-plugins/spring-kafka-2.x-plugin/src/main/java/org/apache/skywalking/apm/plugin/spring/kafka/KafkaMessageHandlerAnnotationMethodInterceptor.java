@@ -53,12 +53,15 @@ public class KafkaMessageHandlerAnnotationMethodInterceptor implements InstanceM
         //1、获取到方法的消息参数
         Object message = extractMessageArgument(argumentsTypes, allArguments, annotation);
         //2、从线程上下文对象中获取到消息map
-        Map<?, Headers> recordHeadersMap = (Map<?, Headers>) ContextManager.getRuntimeContext().get(KAFKA_BATCH_MESSAGE_KEY);
+        Map<?, Headers> recordHeadersMap = getRecordHeadersMap();
         //3、获取到消息header
+        if (Objects.isNull(recordHeadersMap)) {
+            return;
+        }
         Headers headers = recordHeadersMap.get(message);
         //4、放入上下文中
         String operationName = annotation.operationName();
-        if (Objects.nonNull(headers)) {
+        if (Objects.nonNull(message) && Objects.nonNull(headers)) {
             AbstractSpan localSpan = ContextManager.createLocalSpan(operationName.length() == 0 ? MethodUtil.generateOperationName(method) : operationName);
             localSpan.setComponent(ComponentsDefine.KAFKA_CONSUMER);
             SpanLayer.asMQ(localSpan);
@@ -74,6 +77,19 @@ public class KafkaMessageHandlerAnnotationMethodInterceptor implements InstanceM
             }
             ContextManager.extract(contextCarrier);
         }
+    }
+
+    /**
+     * 获取上下文头对象
+     */
+    @SuppressWarnings("unchecked")
+    private Map<?, Headers> getRecordHeadersMap() {
+        Map<?, Headers> recordHeadersMap = null;
+        recordHeadersMap = (Map<?, Headers>) ContextManager.getRuntimeContext().get(KAFKA_BATCH_MESSAGE_KEY);
+        if (Objects.isNull(recordHeadersMap)) {
+            recordHeadersMap = (Map<?, Headers>) ContextManager.getCorrelationContext().getCustomData(KAFKA_BATCH_MESSAGE_KEY);
+        }
+        return recordHeadersMap;
     }
 
     /**
@@ -93,6 +109,7 @@ public class KafkaMessageHandlerAnnotationMethodInterceptor implements InstanceM
         }
         return null;
     }
+
 
     @SuppressWarnings("unchecked")
     @Override

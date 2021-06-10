@@ -35,8 +35,11 @@ public class CorrelationContext {
 
     private final Map<String, String> data;
 
+    private final Map<String, Object> customData;
+
     public CorrelationContext() {
         this.data = new HashMap<>(Config.Correlation.ELEMENT_MAX_NUMBER);
+        this.customData = new HashMap<>();
     }
 
     public Optional<String> put(String key, String value) {
@@ -79,6 +82,18 @@ public class CorrelationContext {
         return Optional.ofNullable(data.get(key));
     }
 
+    public Object getCustomData(String key) {
+        if (key == null) {
+            return null;
+        }
+        return customData.get(key);
+    }
+
+
+    public void putCustomerData(String key, Object value) {
+        this.customData.put(key, value);
+    }
+
     /**
      * Serialize this {@link CorrelationContext} to a {@link String}
      *
@@ -90,8 +105,8 @@ public class CorrelationContext {
         }
 
         return data.entrySet().stream()
-            .map(entry -> Base64.encode(entry.getKey()) + ":" + Base64.encode(entry.getValue()))
-            .collect(Collectors.joining(","));
+                .map(entry -> Base64.encode(entry.getKey()) + ":" + Base64.encode(entry.getValue()))
+                .collect(Collectors.joining(","));
     }
 
     /**
@@ -143,11 +158,13 @@ public class CorrelationContext {
     public CorrelationContext clone() {
         final CorrelationContext context = new CorrelationContext();
         context.data.putAll(this.data);
+        context.customData.putAll(this.customData);
         return context;
     }
 
     void continued(ContextSnapshot snapshot) {
         this.data.putAll(snapshot.getCorrelationContext().data);
+        this.customData.putAll(snapshot.getCorrelationContext().customData);
     }
 
     @Override
@@ -162,4 +179,5 @@ public class CorrelationContext {
     public int hashCode() {
         return Objects.hash(data);
     }
+
 }
