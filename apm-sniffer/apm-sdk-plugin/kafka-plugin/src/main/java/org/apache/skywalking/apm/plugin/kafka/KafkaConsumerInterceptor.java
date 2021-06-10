@@ -63,16 +63,16 @@ public class KafkaConsumerInterceptor implements InstanceMethodsAroundIntercepto
         //
         if (records.size() > 0) {
             ConsumerEnhanceRequiredInfo requiredInfo = (ConsumerEnhanceRequiredInfo) objInst.getSkyWalkingDynamicField();
-            AbstractSpan activeSpan = ContextManager.createEntrySpan(OPERATE_NAME_PREFIX + requiredInfo.getTopics() + CONSUMER_OPERATE_NAME + requiredInfo
-                .getGroupId(), null).start(requiredInfo.getStartTime());
-
-            activeSpan.setComponent(ComponentsDefine.KAFKA_CONSUMER);
-            SpanLayer.asMQ(activeSpan);
-            Tags.MQ_BROKER.set(activeSpan, requiredInfo.getBrokerServers());
-            Tags.MQ_TOPIC.set(activeSpan, requiredInfo.getTopics());
 
             for (List<ConsumerRecord<?, ?>> consumerRecords : records.values()) {
                 for (ConsumerRecord<?, ?> record : consumerRecords) {
+                    AbstractSpan activeSpan = ContextManager.createEntrySpan(OPERATE_NAME_PREFIX + requiredInfo.getTopics() + CONSUMER_OPERATE_NAME + requiredInfo
+                            .getGroupId(), null).start(requiredInfo.getStartTime());
+
+                    activeSpan.setComponent(ComponentsDefine.KAFKA_CONSUMER);
+                    SpanLayer.asMQ(activeSpan);
+                    Tags.MQ_BROKER.set(activeSpan, requiredInfo.getBrokerServers());
+                    Tags.MQ_TOPIC.set(activeSpan, requiredInfo.getTopics());
                     ContextCarrier contextCarrier = new ContextCarrier();
 
                     CarrierItem next = contextCarrier.items();
@@ -84,9 +84,10 @@ public class KafkaConsumerInterceptor implements InstanceMethodsAroundIntercepto
                         }
                     }
                     ContextManager.extract(contextCarrier);
+                    ContextManager.stopSpan();
                 }
             }
-            ContextManager.stopSpan();
+
         }
         return ret;
     }

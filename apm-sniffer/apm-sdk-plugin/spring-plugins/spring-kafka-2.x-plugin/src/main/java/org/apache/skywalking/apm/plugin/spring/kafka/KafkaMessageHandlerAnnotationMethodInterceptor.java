@@ -85,8 +85,10 @@ public class KafkaMessageHandlerAnnotationMethodInterceptor implements InstanceM
     @SuppressWarnings("unchecked")
     private Map<?, Headers> getRecordHeadersMap() {
         Map<?, Headers> recordHeadersMap = null;
+        //单线程放入RuntimeContext中
         recordHeadersMap = (Map<?, Headers>) ContextManager.getRuntimeContext().get(KAFKA_BATCH_MESSAGE_KEY);
         if (Objects.isNull(recordHeadersMap)) {
+            //多线程放在CorrelationContext
             recordHeadersMap = (Map<?, Headers>) ContextManager.getCorrelationContext().getCustomData(KAFKA_BATCH_MESSAGE_KEY);
         }
         return recordHeadersMap;
@@ -118,7 +120,9 @@ public class KafkaMessageHandlerAnnotationMethodInterceptor implements InstanceM
         if (ContextManager.isActive()) {
             Map<?, Headers> recordHeadersMap = (Map<?, Headers>) ContextManager.getRuntimeContext().get(KAFKA_BATCH_MESSAGE_KEY);
             ContextManager.stopSpan();
-            ContextManager.getRuntimeContext().put(KAFKA_BATCH_MESSAGE_KEY, recordHeadersMap);
+            if (Objects.nonNull(recordHeadersMap) && recordHeadersMap.isEmpty()) {
+                ContextManager.getRuntimeContext().put(KAFKA_BATCH_MESSAGE_KEY, recordHeadersMap);
+            }
         }
         return ret;
     }

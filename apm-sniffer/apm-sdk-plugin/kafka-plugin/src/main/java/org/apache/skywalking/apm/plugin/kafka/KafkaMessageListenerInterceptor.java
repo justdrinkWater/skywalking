@@ -22,8 +22,8 @@ import java.util.Objects;
  */
 public class KafkaMessageListenerInterceptor implements InstanceMethodsAroundInterceptor {
 
-    public static final String OPERATE_NAME_PREFIX = "Kafka/";
-    public static final String CONSUMER_OPERATE_NAME = "/Consumer/";
+    public static final String OPERATE_NAME_PREFIX = "spring-kafka/";
+    public static final String CONSUMER_OPERATE_NAME = "/onMessage/";
 
     @Override
     public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes, MethodInterceptResult result) throws Throwable {
