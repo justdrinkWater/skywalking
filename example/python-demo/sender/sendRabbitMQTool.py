@@ -53,7 +53,7 @@ def job(host, port, user, password, database, queue_name):
                 # 记录index
                 index_info = item[0]
                 # 写入到rabbitmq
-                a.send_object(item[1])
+                a.send_json(item[1].replace('\'', '\"'))
 
         # 将id写入到文件
         print('写入文件的index----', index_info)
@@ -134,6 +134,6 @@ if __name__ == '__main__':
     # 创建定时任务，阻塞队列执行，这里的任务不会覆盖执行，即如果第一个任务的执行时间已经超过了第二个任务的开始时间，那个第二个任务不会执行，而是放弃第二个任务，
     # 如果第一个任务的执行时间超过了第三个任务的开始时间，那么第三个任务也会放弃，直到第一个任务执行结束，后续的任务才会开始执行，任务的执行时间间隔30分钟
     scheduler = BlockingScheduler()
-    scheduler.add_job(job, 'interval', minutes=30,
-                      args=['10.17.207.71', 3306, 'root', '123456', 'file_pre_handle_dev', 'file_prehandle_tes'])
+    scheduler.add_job(job, 'interval', minutes=30, start_date='2021-08-16 15:52:20',
+                      args=['10.17.207.71', 3306, 'root', '123456', 'file_pre_handle_dev', 'file_pre_handle_tes'])
     scheduler.start()
