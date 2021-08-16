@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 engine = create_engine(
-    "mysql+pymysql://root:root@10.17.206.177:3306/finchina_cdn_dev",
+    "mysql+pymysql://root:123456@10.17.207.71:3306/file_pre_handle_dev",
     max_overflow=5)
 
 Base = declarative_base()
@@ -12,7 +12,7 @@ Base = declarative_base()
 
 # 表结构
 class FileCdnRecord(Base):
-    __tablename__ = 'file_cdn_record_202009'
+    __tablename__ = 'file_cdn_record_202108'
     id = Column(Integer, primary_key=True)
     guid = Column(String(64))
     filepath = Column(String(500))
@@ -50,5 +50,5 @@ def get_data(criterion):
 
 
 if __name__ == '__main__':
-    ret = get_data(FileCdnRecord.id <= 30)
+    ret = get_data(FileCdnRecord.id <= 20)
     print([row for row in ret])
